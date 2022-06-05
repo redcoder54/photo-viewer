@@ -1,0 +1,1 @@
+To launch the application double-click the phone-viewer-0.0.1.exe
