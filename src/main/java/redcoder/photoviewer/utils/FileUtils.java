@@ -35,7 +35,8 @@ public class FileUtils {
     }
 
     private static boolean isImageFile(File file) {
-        String name = file.getName().toLowerCase();
-        return name.endsWith(".png") || name.endsWith(".jpg") || name.endsWith("jpeg") || name.endsWith("gif");
+        // String name = file.getName().toLowerCase();
+        // return name.endsWith(".png") || name.endsWith(".jpg") || name.endsWith("jpeg") || name.endsWith("gif");
+        return true;
     }
 }

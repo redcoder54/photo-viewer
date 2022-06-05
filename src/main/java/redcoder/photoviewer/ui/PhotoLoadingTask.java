@@ -2,6 +2,7 @@ package redcoder.photoviewer.ui;
 
 import net.miginfocom.swing.MigLayout;
 import redcoder.photoviewer.utils.FileUtils;
+import redcoder.photoviewer.utils.StringUtils;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -17,11 +18,13 @@ import java.util.List;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class PhotoLoadingTask extends SwingWorker<Map<String, List<PhotoLoadingTask.PhotoFile>>, Void> {
 
     private static final Logger LOGGER = Logger.getLogger(PhotoLoadingTask.class.getName());
 
+    private static final int HANDLED_FILE_MAXIMUM_PER_TIME = 20;
     private static final String HANDLED_FILE_NUM_PROPERTY = "handledFileNum";
     private static final String KEY_SUCCESS = "successList";
     private static final String KEY_FAIL = "failList";
@@ -50,6 +53,11 @@ public class PhotoLoadingTask extends SwingWorker<Map<String, List<PhotoLoadingT
     @Override
     protected Map<String, List<PhotoFile>> doInBackground() throws Exception {
         List<File> imageFiles = FileUtils.extractImageFileOnly(files);
+        if (imageFiles.size() > HANDLED_FILE_MAXIMUM_PER_TIME) {
+            String message = "The number of open files exceeds the limit: 20!";
+            JOptionPane.showMessageDialog(null, message, PhotoViewerFrame.TITLE, JOptionPane.WARNING_MESSAGE);
+            return Collections.emptyMap();
+        }
 
         taskProgressBar.setValue(0);
         taskProgressBar.setMaximum(imageFiles.size());
@@ -59,15 +67,19 @@ public class PhotoLoadingTask extends SwingWorker<Map<String, List<PhotoLoadingT
         Iterator<File> it = imageFiles.iterator();
         while (!terminate && it.hasNext()) {
             File file = it.next();
-
             try {
                 BufferedImage bufferedImage = ImageIO.read(file);
-                successList.add(new PhotoFile(file, bufferedImage));
+                if (bufferedImage == null) {
+                    LOGGER.log(Level.SEVERE, "Cannot open file: {0}, it's a image file?", file.getAbsolutePath());
+                    failList.add(new PhotoFile(file, null));
+                } else {
+                    successList.add(new PhotoFile(file, bufferedImage));
+                }
             } catch (IOException e) {
-                LOGGER.log(Level.SEVERE, "打开文件失败：{0}", file.getAbsolutePath());
+                LOGGER.log(Level.SEVERE, "Failed to open file: {0}", file.getAbsolutePath());
                 failList.add(new PhotoFile(file, null));
             }
-            taskProgressBar.appendStr("已处理文件" + file.getName());
+            taskProgressBar.appendStr("handled file: " + file.getName());
             firePropertyChange(HANDLED_FILE_NUM_PROPERTY, handledFileNum, ++handledFileNum);
         }
 
@@ -86,11 +98,17 @@ public class PhotoLoadingTask extends SwingWorker<Map<String, List<PhotoLoadingT
             Toolkit.getDefaultToolkit().beep();
 
             Map<String, List<PhotoFile>> result = get();
+            if (result.isEmpty()) {
+                return;
+            }
             for (PhotoFile pf : result.get(KEY_SUCCESS)) {
                 previewPane.addPhoto(pf.bufferedImage);
             }
-            for (PhotoFile pf : result.get(KEY_FAIL)) {
-                // todo
+            List<PhotoFile> failedList = result.get(KEY_FAIL);
+            if (!failedList.isEmpty()) {
+                List<String> names = failedList.stream().map(t -> t.sourceFile.getName()).collect(Collectors.toList());
+                String message = "The following file cannot be opened:" + "\n\n" + StringUtils.join(names, "\n") + "\n\n";
+                JOptionPane.showMessageDialog(null, message, PhotoViewerFrame.TITLE, JOptionPane.INFORMATION_MESSAGE);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -120,6 +138,7 @@ public class PhotoLoadingTask extends SwingWorker<Map<String, List<PhotoLoadingT
             textArea.setMargin(new Insets(5, 5, 5, 5));
 
             dialog = new JDialog();
+            dialog.setTitle(PhotoViewerFrame.TITLE);
             dialog.setModal(true);
             dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
             dialog.addWindowListener(new WindowAdapter() {

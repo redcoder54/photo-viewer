@@ -12,12 +12,13 @@ import java.util.logging.Logger;
 
 public class PhotoViewerFrame extends JFrame {
 
+    public static final String TITLE = "Phone Viewer";
     private static final Logger LOGGER = Logger.getLogger(PhotoViewerFrame.class.getName());
 
     private PhotoViewerPane photoViewerPane;
 
     public PhotoViewerFrame() {
-        super("Photo Viewer");
+        super(TITLE);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setPreferredSize(new Dimension(900, 600));
         setLayout(new MigLayout("fill"));

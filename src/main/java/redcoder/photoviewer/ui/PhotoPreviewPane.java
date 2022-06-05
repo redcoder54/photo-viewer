@@ -98,7 +98,7 @@ public class PhotoPreviewPane extends JScrollPane {
 
     private class UpAction extends AbstractAction{
         public UpAction() {
-            super("上一张图片");
+            super("Previous picture");
         }
 
         @Override
@@ -109,7 +109,7 @@ public class PhotoPreviewPane extends JScrollPane {
 
     private class DownAction extends AbstractAction{
         public DownAction() {
-            super("下一张图片");
+            super("Next picture");
         }
 
         @Override
