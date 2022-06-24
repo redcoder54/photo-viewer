@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.input.*?>
+<?import org.tbee.javafx.scene.layout.fxml.*?>
+<?import javafx.collections.FXCollections?>
+<?import javafx.scene.control.SplitPane.Divider?>
+<?import java.lang.Double?>
+<MigPane layout="fill"
+         xmlns:fx="http://javafx.com/fxml" fx:controller="redcoder.photoviewer.PhotoViewerController">
+    <SplitPane orientation="VERTICAL" MigPane.cc="grow">
+        <SplitPane MigPane.cc="grow">
+            <Button text="bbb"/>
+            <Button text="ccc"/>
+        </SplitPane>
+
+        <MigPane>
+            <Button text="aaa"/>
+        </MigPane>
+    </SplitPane>
+</MigPane>
