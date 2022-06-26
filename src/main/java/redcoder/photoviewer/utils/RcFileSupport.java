@@ -4,7 +4,7 @@ import java.io.File;
 
 public abstract class RcFileSupport {
 
-    private static final String dir = "redcoder54";
+    private static final String dir = "redcoder54/photo-viewer";
 
     public static File getParentDir() {
         File file = new File(SystemUtils.getUserHome(), dir);

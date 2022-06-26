@@ -1,23 +1,62 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
-<?import javafx.scene.input.*?>
-<?import org.tbee.javafx.scene.layout.fxml.*?>
-<?import javafx.collections.FXCollections?>
-<?import javafx.scene.control.SplitPane.Divider?>
-<?import java.lang.Double?>
-<MigPane layout="fill"
-         xmlns:fx="http://javafx.com/fxml" fx:controller="redcoder.photoviewer.PhotoViewerController">
-    <SplitPane orientation="VERTICAL" MigPane.cc="grow">
-        <SplitPane MigPane.cc="grow">
-            <Button text="bbb"/>
-            <Button text="ccc"/>
-        </SplitPane>
+<?import javafx.scene.image.ImageView?>
+<?import org.tbee.javafx.scene.layout.fxml.MigPane?>
+<?import redcoder.photoviewer.core.*?>
+<SplitPane fx:id="root" xmlns:fx="http://javafx.com/fxml" fx:controller="redcoder.photoviewer.core.PhotoViewerController"
+           orientation="VERTICAL">
+    <SplitPane>
+        <!-- preview area -->
+        <ScrollPane prefWidth="120" minWidth="120" maxWidth="120" fitToWidth="true" fitToHeight="true">
+            <MigPane fx:id="previewPane" layout="flowy, fillx"/>
+        </ScrollPane>
 
-        <MigPane>
-            <Button text="aaa"/>
-        </MigPane>
+        <!-- display area -->
+        <ScrollPane fitToWidth="true" fitToHeight="true">
+            <MigPane layout="fill" cols="[center]" rows="[center]">
+                <ImageView fx:id="imageView"/>
+            </MigPane>
+        </ScrollPane>
     </SplitPane>
-</MigPane>
+
+    <!-- control area -->
+    <MigPane layout="fill" cols="[center]" rows="[center]" prefHeight="40" minHeight="40" maxHeight="40">
+        <Button text="清空" onAction="#handleAction" MigPane.cc="split 7">
+            <userData>
+                <Action fx:constant="CLEAR"/>
+            </userData>
+        </Button>
+        <Button text="打开" onAction="#handleAction">
+            <userData>
+                <Action fx:constant="OPEN"/>
+            </userData>
+        </Button>
+        <Button text="左旋" onAction="#handleAction">
+            <userData>
+                <Action fx:constant="LEFT_ROTATE"/>
+            </userData>
+        </Button>
+        <Button text="右旋" onAction="#handleAction">
+            <userData>
+                <Action fx:constant="RIGHT_ROTATE"/>
+            </userData>
+        </Button>
+        <Button text="放大" onAction="#handleAction">
+            <userData>
+                <Action fx:constant="ZOOM_IN"/>
+            </userData>
+        </Button>
+        <Button text="缩小" onAction="#handleAction">
+            <userData>
+                <Action fx:constant="ZOOM_OUT"/>
+            </userData>
+        </Button>
+        <Button text="还原" onAction="#handleAction">
+            <userData>
+                <Action fx:constant="RESTORE"/>
+            </userData>
+        </Button>
+    </MigPane>
+
+</SplitPane>
