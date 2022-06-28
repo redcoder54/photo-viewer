@@ -23,24 +23,20 @@ import java.util.logging.Logger;
 public class PreviewPhotoModel {
 
     private static final Logger LOGGER = Logger.getLogger(PreviewPhotoModel.class.getName());
-    private static final File thumbnailsDir = new File(RcFileSupport.getParentDir(), "thumbnails");
+
     private static final Border border = new Border(new BorderStroke(Color.RED, BorderStrokeStyle.SOLID,
             CornerRadii.EMPTY, BorderWidths.DEFAULT));
 
-    private ScrollPane previewPane;
-    private MigPane content;
-    private PhotoModel photoModel;
-    private NavigableLabel tailPointer;
-    private NavigableLabel selectedLabel;
+    private final ScrollPane previewPane;
+    private final MigPane content;
+    private final PhotoModel photoModel;
+    private NavigablePreviewItem tail;
+    private NavigablePreviewItem selectedItem;
 
     public PreviewPhotoModel(ScrollPane previewPane, PhotoModel photoModel) {
         this.previewPane = previewPane;
         this.photoModel = photoModel;
         this.content = (MigPane) previewPane.getContent();
-
-        if (!thumbnailsDir.exists()) {
-            thumbnailsDir.mkdirs();
-        }
     }
 
     public void addPhotoFile(File photoFile) {
@@ -49,17 +45,22 @@ public class PreviewPhotoModel {
             return;
         }
 
-        NavigableLabel label = new NavigableLabel(photoFile);
+        NavigablePreviewItem label = new NavigablePreviewItem(photoFile);
         label.setAlignment(Pos.CENTER);
         label.setGraphic(thumbnail);
-        label.setOnMouseClicked(event -> selectLabel(label));
+        label.setOnMouseClicked(event -> chooseItem(label));
         content.add(label, "growx, center");
 
-        if (tailPointer != null) {
-            tailPointer.next = label;
-            label.prev = tailPointer;
+        if (tail != null) {
+            label.prev = tail;
+            tail.next = label;
+            tail = label;
+        } else {
+            // open first photo
+            tail = label;
+            chooseItem(label);
+            photoModel.openPhoto(photoFile);
         }
-        tailPointer = label;
 
         Platform.runLater(() -> {
             double vmax = previewPane.getVmax() + label.getHeight();
@@ -68,32 +69,32 @@ public class PreviewPhotoModel {
     }
 
     public void clear() {
-        tailPointer = null;
-        selectedLabel = null;
+        tail = null;
+        selectedItem = null;
         content.getChildren().clear();
         previewPane.setVmin(0);
         previewPane.setVmax(1);
     }
 
     public void prev() {
-        if (selectedLabel == null) {
+        if (selectedItem == null) {
             return;
         }
-        selectLabel(selectedLabel.prev);
+        chooseItem(selectedItem.prev);
         scrollIfNecessary(false);
     }
 
     public void next() {
-        if (selectedLabel == null) {
+        if (selectedItem == null) {
             return;
         }
-        selectLabel(selectedLabel.next);
+        chooseItem(selectedItem.next);
         scrollIfNecessary(true);
     }
 
     private void scrollIfNecessary(boolean down) {
-        double y = selectedLabel.getLayoutY();
-        double height = selectedLabel.getHeight();
+        double y = selectedItem.getLayoutY();
+        double height = selectedItem.getHeight();
         double vvalue = previewPane.getVvalue();
         if (down) {
             if (vvalue + height < y) {
@@ -108,7 +109,7 @@ public class PreviewPhotoModel {
 
     private ImageView createThumbnail(File photoFile) {
         try {
-            File destFile = Thumbnails.of(photoFile).height(100).width(100).asFiles(thumbnailsDir, new Rename() {
+            File destFile = Thumbnails.of(photoFile).height(100).width(100).asFiles(TmpFileManager.getThumbnailsDir(), new Rename() {
                 @Override
                 public String apply(String name, ThumbnailParameter param) {
                     return UUID.randomUUID().toString();
@@ -121,25 +122,25 @@ public class PreviewPhotoModel {
         }
     }
 
-    private void selectLabel(NavigableLabel label) {
-        if (label == null) {
+    private void chooseItem(NavigablePreviewItem item) {
+        if (item == null) {
             return;
         }
 
-        photoModel.openPhoto(label.photoFile);
-        if (selectedLabel != null) {
-            selectedLabel.setBorder(Border.EMPTY);
+        photoModel.openPhoto(item.photoFile);
+        if (selectedItem != null) {
+            selectedItem.setBorder(Border.EMPTY);
         }
-        selectedLabel = label;
-        selectedLabel.setBorder(border);
+        selectedItem = item;
+        selectedItem.setBorder(border);
     }
 
-    private static class NavigableLabel extends Label {
-        NavigableLabel prev;
-        NavigableLabel next;
+    private static class NavigablePreviewItem extends Label {
+        NavigablePreviewItem prev;
+        NavigablePreviewItem next;
         File photoFile;
 
-        public NavigableLabel(File photoFile) {
+        public NavigablePreviewItem(File photoFile) {
             this.photoFile = photoFile;
         }
     }

@@ -8,10 +8,6 @@ import javafx.stage.Stage;
 
 import java.util.Optional;
 
-/**
- * @author wxy
- * @since 2022-06-27
- */
 public class ConfirmDialogTest extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {

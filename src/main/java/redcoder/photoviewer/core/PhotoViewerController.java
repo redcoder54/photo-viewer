@@ -5,8 +5,8 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.SplitPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -33,7 +33,7 @@ public class PhotoViewerController {
     private final DirectoryChooser directoryChooser = new DirectoryChooser();
 
     @FXML
-    private SplitPane root;
+    private MigPane root;
     @FXML
     private ScrollPane previewPane;
     @FXML
@@ -55,7 +55,16 @@ public class PhotoViewerController {
 
         // add some event-filter
         root.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-            if (event.isControlDown() && event.getCode() == KeyCode.UP) {
+            if (event.getCode() == KeyCode.EQUALS) {
+                photoModel.zoomIn();
+                event.consume();
+            } else if (event.getCode() == KeyCode.MINUS) {
+                photoModel.zoomOut();
+                event.consume();
+            } else if (event.getCode() == KeyCode.DIGIT8) {
+                photoModel.zoomOut();
+                event.consume();
+            } else if (event.isControlDown() && event.getCode() == KeyCode.UP) {
                 previewPhotoModel.prev();
                 event.consume();
             } else if (event.isControlDown() && event.getCode() == KeyCode.DOWN) {
@@ -79,8 +88,19 @@ public class PhotoViewerController {
 
     @FXML
     private void handleAction(ActionEvent event) {
-        Button button = (Button) event.getSource();
-        Action action = (Action) button.getUserData();
+        Action action = null;
+        if (event.getSource() instanceof Button) {
+            Button button = (Button) event.getSource();
+            action = (Action) button.getUserData();
+        } else if (event.getSource() instanceof MenuItem) {
+            MenuItem menuItem = (MenuItem) event.getSource();
+            action = (Action) menuItem.getUserData();
+        }
+        if (action == null) {
+            LOGGER.warning(() -> "Cannot find action from event source.");
+            return;
+        }
+
         switch (action) {
             case CLEAR:
                 previewPhotoModel.clear();
@@ -104,17 +124,24 @@ public class PhotoViewerController {
             case RIGHT_ROTATE:
                 photoModel.rotateRight();
                 break;
+            case PREV:
+                previewPhotoModel.prev();
+                break;
+            case NEXT:
+                previewPhotoModel.next();
+                break;
             case ZOOM_IN:
                 photoModel.zoomIn();
                 break;
             case ZOOM_OUT:
                 photoModel.zoomOut();
                 break;
-            case RESTORE:
-                photoModel.restore();
+            case NO_SCALE:
+                photoModel.noScale();
                 break;
             default:
-                LOGGER.warning(() -> "Unknown action: " + action);
+                String name = action.name();
+                LOGGER.warning(() -> "Unknown action: " + name);
                 break;
         }
     }
@@ -126,6 +153,7 @@ public class PhotoViewerController {
             try {
                 List<File> photoFiles = task.get();
                 photoFiles.forEach(t -> previewPhotoModel.addPhotoFile(t));
+
             } catch (Exception ex) {
                 LOGGER.log(Level.SEVERE, "error", e);
             }

@@ -5,6 +5,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.SplitPane;
 import javafx.stage.Stage;
+import org.tbee.javafx.scene.layout.fxml.MigPane;
+import redcoder.photoviewer.core.TmpFileManager;
 import redcoder.photoviewer.log.LoggingUtils;
 
 import java.util.logging.Level;
@@ -16,11 +18,17 @@ public class PhotoViewer extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        SplitPane root = FXMLLoader.load(getClass().getResource("/fxml/photo-viewer.fxml"));
+        MigPane root = FXMLLoader.load(getClass().getResource("/fxml/photo-viewer.fxml"));
         Scene scene = new Scene(root, 900, 600);
         primaryStage.setScene(scene);
         primaryStage.setTitle("Photo Viewer");
         primaryStage.show();
+    }
+
+    @Override
+    public void stop() throws Exception {
+        TmpFileManager.clearTmpDir();
+        TmpFileManager.deleteThumbnails();
     }
 
     public static void main(String[] args) {

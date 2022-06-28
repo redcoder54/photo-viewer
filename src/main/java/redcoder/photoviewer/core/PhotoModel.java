@@ -21,21 +21,16 @@ public class PhotoModel {
     private static final double SCALE_MINIMUM = 0.1;
     private static final double SCALE_MAXIMUM = 10;
 
-    private final File destDir = new File(RcFileSupport.getParentDir(), "tmp");
+
     private File sourcePhotoFile;
     private File operationTarget;
     private double rotate = 0;
     private double scale = 1.0;
 
-    private ImageView imageView;
+    private final ImageView imageView;
 
     public PhotoModel(ImageView imageView) {
         this.imageView = imageView;
-
-        // create dir if not exist
-        if (!destDir.exists()) {
-            destDir.mkdirs();
-        }
     }
 
     public void rotateLeft() {
@@ -61,7 +56,7 @@ public class PhotoModel {
         scale += SCALE_UNIT;
         scale = Math.min(scale, SCALE_MAXIMUM);
         try {
-            List<File> files = Thumbnails.of(sourcePhotoFile).scale(scale).asFiles(destDir, new Rename() {
+            List<File> files = Thumbnails.of(sourcePhotoFile).scale(scale).asFiles(TmpFileManager.getTmpDir(), new Rename() {
                 @Override
                 public String apply(String name, ThumbnailParameter param) {
                     return UUID.randomUUID().toString();
@@ -81,7 +76,7 @@ public class PhotoModel {
         scale -= SCALE_UNIT;
         scale = Math.max(scale, SCALE_MINIMUM);
         try {
-            List<File> files = Thumbnails.of(sourcePhotoFile).scale(scale).asFiles(destDir, Rename.PREFIX_DOT_THUMBNAIL);
+            List<File> files = Thumbnails.of(sourcePhotoFile).scale(scale).asFiles(TmpFileManager.getTmpDir(), Rename.PREFIX_DOT_THUMBNAIL);
             operationTarget = files.get(0);
             update();
         } catch (Exception e) {
@@ -89,17 +84,19 @@ public class PhotoModel {
         }
     }
 
-    public void restore() {
+    public void noScale() {
+        operationTarget = sourcePhotoFile;
+        scale = 1.0;
+        update();
+    }
+
+    public void openPhoto(File photoFile) {
+        sourcePhotoFile = photoFile;
         operationTarget = sourcePhotoFile;
         rotate = 0;
         scale = 1.0;
         imageView.setRotate(0);
         update();
-    }
-
-    public void openPhoto(File photoFile) {
-        this.sourcePhotoFile = photoFile;
-        restore();
     }
 
     public void closePhoto() {

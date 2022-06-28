@@ -6,7 +6,9 @@ public enum Action {
     OPEN_DIR,
     LEFT_ROTATE,
     RIGHT_ROTATE,
+    PREV,
+    NEXT,
     ZOOM_IN,
     ZOOM_OUT,
-    RESTORE
+    NO_SCALE
 }

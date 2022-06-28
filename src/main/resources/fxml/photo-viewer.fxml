@@ -4,64 +4,186 @@
 <?import javafx.scene.image.ImageView?>
 <?import org.tbee.javafx.scene.layout.fxml.MigPane?>
 <?import redcoder.photoviewer.core.*?>
-<SplitPane fx:id="root" xmlns:fx="http://javafx.com/fxml" fx:controller="redcoder.photoviewer.core.PhotoViewerController"
-           orientation="VERTICAL">
-    <SplitPane>
-        <!-- preview area -->
-        <ScrollPane fx:id="previewPane" prefWidth="150" minWidth="150" maxWidth="150" fitToWidth="true" fitToHeight="true">
-            <MigPane layout="flowy, fillx"/>
-        </ScrollPane>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.input.KeyCombination?>
+<MigPane fx:id="root" xmlns:fx="http://javafx.com/fxml" fx:controller="redcoder.photoviewer.core.PhotoViewerController">
+    <MenuBar MigPane.cc="north">
+        <Menu text="菜单">
+            <MenuItem text="打开照片" onAction="#handleAction">
+                <userData>
+                    <Action fx:constant="OPEN_FILE"/>
+                </userData>
+                <accelerator>
+                    <KeyCombination fx:value="Ctrl+O"/>
+                </accelerator>
+            </MenuItem>
+            <MenuItem text="打开文件夹" onAction="#handleAction">
+                <userData>
+                    <Action fx:constant="OPEN_DIR"/>
+                </userData>
+                <accelerator>
+                    <KeyCombination fx:value="Ctrl+Shift+O"/>
+                </accelerator>
+            </MenuItem>
+            <SeparatorMenuItem/>
+            <MenuItem text="放大" onAction="#handleAction">
+                <userData>
+                    <Action fx:constant="ZOOM_IN"/>
+                </userData>
+                <accelerator>
+                    <KeyCombination fx:value="Add"/>
+                </accelerator>
+            </MenuItem>
+            <MenuItem text="缩小" onAction="#handleAction">
+                <userData>
+                    <Action fx:constant="ZOOM_OUT"/>
+                </userData>
+                <accelerator>
+                    <KeyCombination fx:value="Subtract"/>
+                </accelerator>
+            </MenuItem>
+            <MenuItem text="100%" onAction="#handleAction">
+                <userData>
+                    <Action fx:constant="NO_SCALE"/>
+                </userData>
+                <accelerator>
+                    <KeyCombination fx:value="Multiply"/>
+                </accelerator>
+            </MenuItem>
+            <SeparatorMenuItem/>
+            <MenuItem text="下一张" onAction="#handleAction">
+                <userData>
+                    <Action fx:constant="PREV"/>
+                </userData>
+                <accelerator>
+                    <KeyCombination fx:value="Ctrl+Up"/>
+                </accelerator>
+            </MenuItem>
+            <MenuItem text="上一张" onAction="#handleAction">
+                <userData>
+                    <Action fx:constant="NEXT"/>
+                </userData>
+                <accelerator>
+                    <KeyCombination fx:value="Ctrl+Down"/>
+                </accelerator>
+            </MenuItem>
+            <SeparatorMenuItem/>
+            <MenuItem text="逆时针旋转90度" onAction="#handleAction">
+                <userData>
+                    <Action fx:constant="LEFT_ROTATE"/>
+                </userData>
+                <accelerator>
+                    <KeyCombination fx:value="Ctrl+Left"/>
+                </accelerator>
+            </MenuItem>
+            <MenuItem text="顺时针旋转90度" onAction="#handleAction">
+                <userData>
+                    <Action fx:constant="RIGHT_ROTATE"/>
+                </userData>
+                <accelerator>
+                    <KeyCombination fx:value="Ctrl+Right"/>
+                </accelerator>
+            </MenuItem>
+            <SeparatorMenuItem/>
+            <MenuItem text="清空" onAction="#handleAction">
+                <userData>
+                    <Action fx:constant="CLEAR"/>
+                </userData>
+                <accelerator>
+                    <KeyCombination fx:value="Ctrl+W"/>
+                </accelerator>
+            </MenuItem>
+        </Menu>
+    </MenuBar>
 
-        <!-- display area -->
-        <ScrollPane fitToWidth="true" fitToHeight="true">
-            <MigPane layout="fill" cols="[center]" rows="[center]">
-                <ImageView fx:id="imageView"/>
-            </MigPane>
-        </ScrollPane>
+    <SplitPane orientation="VERTICAL" MigPane.cc="dock center">
+        <SplitPane>
+            <!-- preview area -->
+            <ScrollPane fx:id="previewPane" prefWidth="150" minWidth="150" maxWidth="150" fitToWidth="true" fitToHeight="true">
+                <MigPane layout="flowy, fillx"/>
+            </ScrollPane>
+
+            <!-- display area -->
+            <ScrollPane fitToWidth="true" fitToHeight="true">
+                <MigPane layout="fill" cols="[center]" rows="[center]">
+                    <ImageView fx:id="imageView"/>
+                </MigPane>
+            </ScrollPane>
+        </SplitPane>
+
+        <!-- toolbar -->
+        <MigPane layout="fill" cols="[center]" rows="[center]" prefHeight="40" minHeight="40" maxHeight="40">
+            <Button onAction="#handleAction" MigPane.cc="split 7">
+                <userData>
+                    <Action fx:constant="ZOOM_IN"/>
+                </userData>
+                <graphic>
+                    <ImageView>
+                        <Image url="@../images/zoom_in.png"/>
+                    </ImageView>
+                </graphic>
+            </Button>
+            <Button onAction="#handleAction">
+                <userData>
+                    <Action fx:constant="ZOOM_OUT"/>
+                </userData>
+                <graphic>
+                    <ImageView>
+                        <Image url="@../images/zoom_out.png"/>
+                    </ImageView>
+                </graphic>
+            </Button>
+            <Button onAction="#handleAction">
+                <userData>
+                    <Action fx:constant="LEFT_ROTATE"/>
+                </userData>
+                <graphic>
+                    <ImageView>
+                        <Image url="@../images/left_rotate.png"/>
+                    </ImageView>
+                </graphic>
+            </Button>
+            <Button onAction="#handleAction">
+                <userData>
+                    <Action fx:constant="RIGHT_ROTATE"/>
+                </userData>
+                <graphic>
+                    <ImageView>
+                        <Image url="@../images/right_rotate.png"/>
+                    </ImageView>
+                </graphic>
+            </Button>
+            <Button onAction="#handleAction">
+                <userData>
+                    <Action fx:constant="NO_SCALE"/>
+                </userData>
+                <graphic>
+                    <ImageView>
+                        <Image url="@../images/restore.png"/>
+                    </ImageView>
+                </graphic>
+            </Button>
+            <Button onAction="#handleAction">
+                <userData>
+                    <Action fx:constant="PREV"/>
+                </userData>
+                <graphic>
+                    <ImageView>
+                        <Image url="@../images/prev.png"/>
+                    </ImageView>
+                </graphic>
+            </Button>
+            <Button onAction="#handleAction">
+                <userData>
+                    <Action fx:constant="NEXT"/>
+                </userData>
+                <graphic>
+                    <ImageView>
+                        <Image url="@../images/next.png"/>
+                    </ImageView>
+                </graphic>
+            </Button>
+        </MigPane>
+
     </SplitPane>
-
-    <!-- control area -->
-    <MigPane layout="fill" cols="[center]" rows="[center]" prefHeight="40" minHeight="40" maxHeight="40">
-        <Button text="清空" onAction="#handleAction" MigPane.cc="split 8">
-            <userData>
-                <Action fx:constant="CLEAR"/>
-            </userData>
-        </Button>
-        <Button text="打开文件" onAction="#handleAction">
-            <userData>
-                <Action fx:constant="OPEN_FILE"/>
-            </userData>
-        </Button>
-        <Button text="打开目录" onAction="#handleAction">
-            <userData>
-                <Action fx:constant="OPEN_DIR"/>
-            </userData>
-        </Button>
-        <Button text="左旋" onAction="#handleAction">
-            <userData>
-                <Action fx:constant="LEFT_ROTATE"/>
-            </userData>
-        </Button>
-        <Button text="右旋" onAction="#handleAction">
-            <userData>
-                <Action fx:constant="RIGHT_ROTATE"/>
-            </userData>
-        </Button>
-        <Button text="放大" onAction="#handleAction">
-            <userData>
-                <Action fx:constant="ZOOM_IN"/>
-            </userData>
-        </Button>
-        <Button text="缩小" onAction="#handleAction">
-            <userData>
-                <Action fx:constant="ZOOM_OUT"/>
-            </userData>
-        </Button>
-        <Button text="还原" onAction="#handleAction">
-            <userData>
-                <Action fx:constant="RESTORE"/>
-            </userData>
-        </Button>
-    </MigPane>
-
-</SplitPane>
+</MigPane>

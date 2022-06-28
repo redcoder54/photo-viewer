@@ -5,9 +5,6 @@ import org.tbee.javafx.scene.layout.fxml.MigPane;
 
 /**
  * 任务进度对话
- *
- * @author wxy
- * @since 2022-06-27
  */
 public class TaskProgressDialog extends Dialog<Void> {
 

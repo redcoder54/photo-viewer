@@ -3,12 +3,6 @@ package redcoder.photoviewer.core.dialog;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 
-/**
- * 确认对话
- *
- * @author wxy
- * @since 2022-06-27
- */
 public class ConfirmDialog extends Dialog<ConfirmDialog.State> {
 
     public ConfirmDialog() {
