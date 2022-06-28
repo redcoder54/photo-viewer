@@ -1,7 +1,9 @@
 package redcoder.photoviewer.core;
 
+import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
@@ -25,14 +27,16 @@ public class PreviewPhotoModel {
     private static final Border border = new Border(new BorderStroke(Color.RED, BorderStrokeStyle.SOLID,
             CornerRadii.EMPTY, BorderWidths.DEFAULT));
 
-    private MigPane previewPane;
+    private ScrollPane previewPane;
+    private MigPane content;
     private PhotoModel photoModel;
     private NavigableLabel tailPointer;
     private NavigableLabel selectedLabel;
 
-    public PreviewPhotoModel(MigPane previewPane, PhotoModel photoModel) {
+    public PreviewPhotoModel(ScrollPane previewPane, PhotoModel photoModel) {
         this.previewPane = previewPane;
         this.photoModel = photoModel;
+        this.content = (MigPane) previewPane.getContent();
 
         if (!thumbnailsDir.exists()) {
             thumbnailsDir.mkdirs();
@@ -49,21 +53,57 @@ public class PreviewPhotoModel {
         label.setAlignment(Pos.CENTER);
         label.setGraphic(thumbnail);
         label.setOnMouseClicked(event -> selectLabel(label));
-        previewPane.add(label, "growx, center");
+        content.add(label, "growx, center");
 
         if (tailPointer != null) {
             tailPointer.next = label;
             label.prev = tailPointer;
         }
         tailPointer = label;
+
+        Platform.runLater(() -> {
+            double vmax = previewPane.getVmax() + label.getHeight();
+            previewPane.setVmax(vmax);
+        });
+    }
+
+    public void clear() {
+        tailPointer = null;
+        selectedLabel = null;
+        content.getChildren().clear();
+        previewPane.setVmin(0);
+        previewPane.setVmax(1);
     }
 
     public void prev() {
+        if (selectedLabel == null) {
+            return;
+        }
         selectLabel(selectedLabel.prev);
+        scrollIfNecessary(false);
     }
 
     public void next() {
+        if (selectedLabel == null) {
+            return;
+        }
         selectLabel(selectedLabel.next);
+        scrollIfNecessary(true);
+    }
+
+    private void scrollIfNecessary(boolean down) {
+        double y = selectedLabel.getLayoutY();
+        double height = selectedLabel.getHeight();
+        double vvalue = previewPane.getVvalue();
+        if (down) {
+            if (vvalue + height < y) {
+                previewPane.setVvalue(y + height);
+            }
+        } else {
+            if (vvalue > y) {
+                previewPane.setVvalue(y);
+            }
+        }
     }
 
     private ImageView createThumbnail(File photoFile) {
@@ -81,7 +121,7 @@ public class PreviewPhotoModel {
         }
     }
 
-    public void selectLabel(NavigableLabel label) {
+    private void selectLabel(NavigableLabel label) {
         if (label == null) {
             return;
         }

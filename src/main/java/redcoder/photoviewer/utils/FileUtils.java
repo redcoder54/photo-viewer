@@ -9,12 +9,12 @@ import java.util.List;
  */
 public class FileUtils {
 
-    public static List<File> extractImageFileOnly(List<File> files) {
+    public static List<File> extractFileOnly(List<File> files) {
         List<File> onlyFiles = new ArrayList<>();
         for (File file : files) {
             if (file.isDirectory()) {
                 extractFileFromDir(file, onlyFiles);
-            } else if (isImageFile(file)) {
+            } else {
                 onlyFiles.add(file);
             }
         }
@@ -27,16 +27,10 @@ public class FileUtils {
             for (File file : files) {
                 if (file.isDirectory()) {
                     extractFileFromDir(file, onlyFiles);
-                } else if (isImageFile(file)) {
+                } else {
                     onlyFiles.add(file);
                 }
             }
         }
-    }
-
-    private static boolean isImageFile(File file) {
-        // String name = file.getName().toLowerCase();
-        // return name.endsWith(".png") || name.endsWith(".jpg") || name.endsWith("jpeg") || name.endsWith("gif");
-        return true;
     }
 }

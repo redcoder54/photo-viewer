@@ -2,7 +2,8 @@ package redcoder.photoviewer.core;
 
 public enum Action {
     CLEAR,
-    OPEN,
+    OPEN_FILE,
+    OPEN_DIR,
     LEFT_ROTATE,
     RIGHT_ROTATE,
     ZOOM_IN,

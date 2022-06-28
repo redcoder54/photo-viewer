@@ -8,8 +8,8 @@
            orientation="VERTICAL">
     <SplitPane>
         <!-- preview area -->
-        <ScrollPane prefWidth="120" minWidth="120" maxWidth="120" fitToWidth="true" fitToHeight="true">
-            <MigPane fx:id="previewPane" layout="flowy, fillx"/>
+        <ScrollPane fx:id="previewPane" prefWidth="150" minWidth="150" maxWidth="150" fitToWidth="true" fitToHeight="true">
+            <MigPane layout="flowy, fillx"/>
         </ScrollPane>
 
         <!-- display area -->
@@ -22,14 +22,19 @@
 
     <!-- control area -->
     <MigPane layout="fill" cols="[center]" rows="[center]" prefHeight="40" minHeight="40" maxHeight="40">
-        <Button text="清空" onAction="#handleAction" MigPane.cc="split 7">
+        <Button text="清空" onAction="#handleAction" MigPane.cc="split 8">
             <userData>
                 <Action fx:constant="CLEAR"/>
             </userData>
         </Button>
-        <Button text="打开" onAction="#handleAction">
+        <Button text="打开文件" onAction="#handleAction">
             <userData>
-                <Action fx:constant="OPEN"/>
+                <Action fx:constant="OPEN_FILE"/>
+            </userData>
+        </Button>
+        <Button text="打开目录" onAction="#handleAction">
+            <userData>
+                <Action fx:constant="OPEN_DIR"/>
             </userData>
         </Button>
         <Button text="左旋" onAction="#handleAction">
