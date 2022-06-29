@@ -18,6 +18,7 @@ import org.tbee.javafx.scene.layout.fxml.MigPane;
 import redcoder.photoviewer.core.dialog.ConfirmDialog;
 import redcoder.photoviewer.core.dialog.TaskProgressDialog;
 import redcoder.photoviewer.utils.FileUtils;
+import redcoder.photoviewer.utils.TaskExecutor;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -153,19 +154,12 @@ public class PhotoViewerController {
             try {
                 List<File> photoFiles = task.get();
                 photoFiles.forEach(t -> previewPhotoModel.addPhotoFile(t));
-
             } catch (Exception ex) {
                 LOGGER.log(Level.SEVERE, "error", e);
             }
         });
-        startTask(task);
+        TaskExecutor.execute(task);
         dialog.show();
-    }
-
-    private void startTask(Task task) {
-        Thread thread = new Thread(task, "LoadingTask[" + UUID.randomUUID() + "]");
-        thread.setDaemon(true);
-        thread.start();
     }
 
     private static class PhotoLoadingTask extends Task<List<File>> {
