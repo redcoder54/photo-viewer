@@ -9,9 +9,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.ScrollEvent;
+import javafx.scene.input.*;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import org.tbee.javafx.scene.layout.fxml.MigPane;
@@ -22,7 +20,10 @@ import redcoder.photoviewer.utils.TaskExecutor;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -84,6 +85,21 @@ public class PhotoViewerController {
                 }
                 event.consume();
             }
+        });
+
+        // add support for drag and drop
+        root.setOnDragOver(event -> {
+            event.acceptTransferModes(TransferMode.COPY);
+            event.consume();
+        });
+        root.setOnDragDropped(event -> {
+            Dragboard dragboard = event.getDragboard();
+            if (dragboard.hasFiles()) {
+                List<File> files = dragboard.getFiles();
+                handleFils(files);
+            }
+            event.setDropCompleted(true);
+            event.consume();
         });
     }
 
